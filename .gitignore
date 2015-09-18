@@ -3,3 +3,4 @@
 artifacts
 packages
 pubspec.lock
+/lib/cache/
