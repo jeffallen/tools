@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.0.15
+- fix mojo_run command to support sky_engine >= 0.0.27
+
 ## 0.0.8+3
 - added a dependency to the `sky_tools` package in the generated project template
 
