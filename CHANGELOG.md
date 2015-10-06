@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.0.16
+- update Flutter project template
+
 ## 0.0.15
 - fix mojo_run command to support sky_engine >= 0.0.27
 
