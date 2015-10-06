@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.0.17
+- fixed an issue when running the `sky_tools init` command
+
 ## 0.0.16
 - update Flutter project template
 
