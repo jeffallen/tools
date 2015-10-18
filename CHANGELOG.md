@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.0.24
+- fixed an issue where the process exit codes were not being set correctly
+
 ## 0.0.17
 - fixed an issue when running the `sky_tools init` command
 
