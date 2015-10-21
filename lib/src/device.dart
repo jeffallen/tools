@@ -690,6 +690,10 @@ class AndroidDevice extends Device {
     return '${_getDeviceDataPath(app)}/${app.name}.sha1';
   }
 
+  String _getDeviceBundlePath(ApplicationPackage app) {
+    return '${_getDeviceDataPath(app)}/dev.flx';
+  }
+
   String _getDeviceApkSha1(ApplicationPackage app) {
     return runCheckedSync([adbPath, 'shell', 'cat', _getDeviceSha1Path(app)]);
   }
@@ -737,66 +741,31 @@ class AndroidDevice extends Device {
     return true;
   }
 
-  Future<bool> startServer(
-      String target, bool poke, bool checked, AndroidApk apk) async {
-    String serverRoot = '';
-    String mainDart = '';
-    String missingMessage = '';
-    if (await FileSystemEntity.isDirectory(target)) {
-      serverRoot = target;
-      mainDart = path.join(serverRoot, 'lib', 'main.dart');
-      missingMessage = 'Missing lib/main.dart in project: $serverRoot';
-    } else {
-      serverRoot = Directory.current.path;
-      mainDart = target;
-      missingMessage = '$mainDart does not exist.';
-    }
-
-    if (!await FileSystemEntity.isFile(mainDart)) {
-      _logging.severe(missingMessage);
+  bool startBundle(AndroidApk apk, String bundlePath, bool poke, bool checked) {
+    if (!FileSystemEntity.isFileSync(bundlePath)) {
+      _logging.severe('Cannot find $bundlePath');
       return false;
     }
 
     if (!poke) {
       // Set up port forwarding for observatory.
       String observatoryPortString = 'tcp:$_observatoryPort';
-      runCheckedSync(
-          [adbPath, 'forward', observatoryPortString, observatoryPortString]);
-
-      // Actually start the server.
-      await Process.start('pub', ['run', 'sky_tools:sky_server', _serverPort],
-          workingDirectory: serverRoot, mode: ProcessStartMode.DETACHED);
-
-      // Set up reverse port-forwarding so that the Android app can reach the
-      // server running on localhost.
-      String serverPortString = 'tcp:$_serverPort';
-      runCheckedSync([adbPath, 'reverse', serverPortString, serverPortString]);
+      runCheckedSync([adbPath, 'forward', observatoryPortString, observatoryPortString]);
     }
 
-    String relativeDartMain = path.relative(mainDart, from: serverRoot);
-    String url = 'http://localhost:$_serverPort/$relativeDartMain';
-    if (poke) {
-      url += '?rand=${new Random().nextDouble()}';
-    }
+    String deviceTmpPath = '/data/local/tmp/dev.flx';
+    String deviceBundlePath = _getDeviceBundlePath(apk);
+    runCheckedSync([adbPath, 'push', bundlePath, deviceTmpPath]);
+    runCheckedSync([adbPath, 'shell', 'mv', deviceTmpPath, deviceBundlePath]);
 
-    // Actually launch the app on Android.
     List<String> cmd = [
-      adbPath,
-      'shell',
-      'am',
-      'start',
-      '-a',
-      'android.intent.action.VIEW',
-      '-d',
-      url,
+      adbPath, 'shell', 'am', 'start', '-a', 'android.intent.action.RUN', '-d', deviceBundlePath,
     ];
     if (checked) {
       cmd.addAll(['--ez', 'enable-checked-mode', 'true']);
     }
     cmd.add(apk.launchActivity);
-
     runCheckedSync(cmd);
-
     return true;
   }
 
@@ -808,26 +777,8 @@ class AndroidDevice extends Device {
   }
 
   Future<bool> stopApp(AndroidApk apk) async {
-    // Turn off reverse port forwarding
-    runSync([adbPath, 'reverse', '--remove', 'tcp:$_serverPort']);
     // Stop the app
     runSync([adbPath, 'shell', 'am', 'force-stop', apk.id]);
-    // Kill the server
-    if (Platform.isMacOS) {
-      String pid = runSync(['lsof', '-i', ':$_serverPort', '-t']);
-      if (pid.isEmpty) {
-        _logging.fine('No process to kill for port $_serverPort');
-        return true;
-      }
-      // Killing a pid with a shell command from within dart is hard,
-      // so use a library command, but it's still nice to give the
-      // equivalent command when doing verbose logging.
-      _logging.info('kill $pid');
-      Process.killPid(int.parse(pid));
-    } else {
-      runSync(['fuser', '-k', '$_serverPort/tcp']);
-    }
-
     return true;
   }
 

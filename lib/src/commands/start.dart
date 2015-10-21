@@ -9,6 +9,7 @@ import 'package:path/path.dart' as path;
 
 import '../application_package.dart';
 import '../device.dart';
+import 'build.dart';
 import 'flutter_command.dart';
 import 'install.dart';
 import 'stop.dart';
@@ -35,6 +36,8 @@ class StartCommand extends FlutterCommand {
         help: 'Boot the iOS Simulator if it isn\'t already running.');
   }
 
+  static const String _localBundlePath = 'app.flx';
+
   @override
   Future<int> run() async {
     await downloadApplicationPackagesAndConnectToDevices();
@@ -58,8 +61,10 @@ class StartCommand extends FlutterCommand {
       if (package == null || !device.isConnected())
         continue;
       if (device is AndroidDevice) {
-        String target = path.absolute(argResults['target']);
-        if (await device.startServer(target, poke, argResults['checked'], package))
+        BuildCommand builder = new BuildCommand();
+        builder.inheritFromParent(this);
+        builder.build(outputPath: _localBundlePath);
+        if (device.startBundle(package, _localBundlePath, poke, argResults['checked']))
           startedSomething = true;
       } else {
         if (await device.startApp(package))
