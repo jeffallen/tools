@@ -2,5 +2,6 @@ language: dart
 sudo: false
 dart:
   - dev
-  - stable
+# TODO: Re-enable once 1.13 hits stable.
+#  - stable
 script: ./tool/travis.sh
