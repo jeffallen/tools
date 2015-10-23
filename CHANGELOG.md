@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.0.26
+- Add the --precompiled option to the build command that indicates a script
+  snapshot should not be created since the executable will contain the
+  precompiled instruction buffer
+
 ## 0.0.24
 - fixed an issue where the process exit codes were not being set correctly
 
