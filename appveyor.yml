@@ -16,4 +16,4 @@ build: off
 test_script:
   - pub global activate tuneup
   - pub global run tuneup check
-  - pub run test -j1
+  - dart --checked test\all.dart
