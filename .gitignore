@@ -1,6 +1,7 @@
 .packages
 .pub
 artifacts
+doc/api/
 packages
 pubspec.lock
 /lib/cache/
