@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.0.28
+- Depend on a more recent version of test, since the old version
+  indirectly referenced the now-obsolete VM package dart:profiler.
+
 ## 0.0.26
 - Add the --precompiled option to the build command that indicates a script
   snapshot should not be created since the executable will contain the
