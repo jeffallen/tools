@@ -1,8 +1,9 @@
 # CHANGELOG
 
-## unreleased
+## 0.0.29
 - Changed some `sky_tools` commands to enforce that they're run from a project
   root
+- Fixed an issue with the starter template
 
 ## 0.0.28
 - Depend on a more recent version of test, since the old version indirectly
