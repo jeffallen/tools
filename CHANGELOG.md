@@ -1,8 +1,15 @@
 # CHANGELOG
 
+## unreleased
+- Changed some `sky_tools` commands to enforce that they're run from a project
+  root
+
 ## 0.0.28
-- Depend on a more recent version of test, since the old version
-  indirectly referenced the now-obsolete VM package dart:profiler.
+- Depend on a more recent version of test, since the old version indirectly
+  referenced the now-obsolete VM package dart:profiler.
+
+## 0.0.27
+- fixed issues running `sky_tools start` on Windows
 
 ## 0.0.26
 - Add the --precompiled option to the build command that indicates a script
