@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.0.30
+- Fixed the test framework, which had broken in 0.0.28.
+- Fixed a race condition with launching flutter apps. The symptom was
+  a black screen.
+
 ## 0.0.29
 - Changed some `sky_tools` commands to enforce that they're run from a project
   root
