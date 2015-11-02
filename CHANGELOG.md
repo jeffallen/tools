@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.0.33
+- Explicitly depend on a new version of 'analyzer' since old ones are
+  causing problems.
+
 ## 0.0.32
 - Make the test framework handle a crashing engine.
 
