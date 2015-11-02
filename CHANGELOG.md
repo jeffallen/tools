@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.0.32
+- Make the test framework handle a crashing engine.
+
 ## 0.0.30
 - Fixed the test framework, which had broken in 0.0.28.
 - Fixed a race condition with launching flutter apps. The symptom was
