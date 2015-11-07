@@ -686,16 +686,8 @@ class AndroidDevice extends Device {
     return false;
   }
 
-  String _getDeviceDataPath(ApplicationPackage app) {
-    return '/data/data/${app.id}';
-  }
-
   String _getDeviceSha1Path(ApplicationPackage app) {
-    return '${_getDeviceDataPath(app)}/${app.name}.sha1';
-  }
-
-  String _getDeviceBundlePath(ApplicationPackage app) {
-    return '${_getDeviceDataPath(app)}/dev.flx';
+    return '/data/local/tmp/sky.${app.id}.sha1';
   }
 
   String _getDeviceApkSha1(ApplicationPackage app) {
@@ -748,7 +740,6 @@ class AndroidDevice extends Device {
 
     print('Installing ${app.name} on device.');
     runCheckedSync([adbPath, 'install', '-r', app.localPath]);
-    runCheckedSync([adbPath, 'shell', 'run-as', app.id, 'chmod', '777', _getDeviceDataPath(app)]);
     runCheckedSync([adbPath, 'shell', 'echo', '-n', _getSourceSha1(app), '>', _getDeviceSha1Path(app)]);
     return true;
   }
@@ -769,14 +760,12 @@ class AndroidDevice extends Device {
       _forwardObservatoryPort();
 
     String deviceTmpPath = '/data/local/tmp/dev.flx';
-    String deviceBundlePath = _getDeviceBundlePath(apk);
     runCheckedSync([adbPath, 'push', bundlePath, deviceTmpPath]);
-    runCheckedSync([adbPath, 'shell', 'mv', deviceTmpPath, deviceBundlePath]);
     List<String> cmd = [
       adbPath,
       'shell', 'am', 'start',
       '-a', 'android.intent.action.RUN',
-      '-d', deviceBundlePath,
+      '-d', deviceTmpPath,
     ];
     if (checked)
       cmd.addAll(['--ez', 'enable-checked-mode', 'true']);
